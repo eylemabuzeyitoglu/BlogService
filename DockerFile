@@ -1,6 +1,6 @@
 FROM openjdk:11-jre-slim
 
-WORKDIR /app
+WORKDIR /var/lib/postgresql/data
 
 COPY target/blog-service.jar /app/blog-service.jar
 
