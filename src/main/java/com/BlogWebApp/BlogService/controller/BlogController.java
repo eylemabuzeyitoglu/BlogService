@@ -3,6 +3,7 @@ package com.BlogWebApp.BlogService.controller;
 import com.BlogWebApp.BlogService.mapper.BlogRequest;
 import com.BlogWebApp.BlogService.mapper.BlogResponse;
 import com.BlogWebApp.BlogService.service.BlogService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,12 @@ public class BlogController {
     @DeleteMapping("/{id}")
     public void deleteBlog(@PathVariable Long id){
         blogService.deleteBlog(id);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/test")
+    public String adminEndpoint() {
+        return "Admin access granted";
     }
 
     @GetMapping

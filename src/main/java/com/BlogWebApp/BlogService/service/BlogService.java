@@ -101,14 +101,12 @@ public class BlogService {
 
     @RabbitListener(queues = "blog-liked-queue")
     public void handleBlogLikedEvent(BlogLikedEvent event) {
-        // Blogu güncellemek için event ile gelen bilgileri kullan
         Long userId = event.getUserId();
         Long blogId = event.getBlogId();
 
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new BlogNotFoundException("Blog bulunamadı"));
 
-        // Beğenilen blogun likedUserIds listesine kullanıcıyı ekle
         blog.getLikedUserIds().add(userId);
         blogRepository.save(blog);
     }
