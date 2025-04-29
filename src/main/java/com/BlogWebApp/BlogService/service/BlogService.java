@@ -1,33 +1,35 @@
 package com.BlogWebApp.BlogService.service;
 
+import com.BlogWebApp.BlogService.dto.BlogRequest;
+import com.BlogWebApp.BlogService.dto.BlogResponse;
 import com.BlogWebApp.BlogService.events.BlogCreatedEvent;
 import com.BlogWebApp.BlogService.events.BlogDeletedEvent;
 import com.BlogWebApp.BlogService.events.BlogLikedEvent;
 import com.BlogWebApp.BlogService.events.BlogUpdatedEvent;
 import com.BlogWebApp.BlogService.exceptions.BlogNotFoundException;
 import com.BlogWebApp.BlogService.mapper.BlogMapper;
-import com.BlogWebApp.BlogService.dto.BlogRequest;
-import com.BlogWebApp.BlogService.dto.BlogResponse;
 import com.BlogWebApp.BlogService.model.Blog;
 import com.BlogWebApp.BlogService.repository.BlogRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.BlogWebApp.CommonSecurity.security.JwtUtil;
+import com.BlogWebApp.CommonSecurity.security.JwtAuthenticationFilter;
+import com.BlogWebApp.CommonSecurity.config.SecurityConfig;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class BlogService {
     private final BlogRepository blogRepository;
     private final BlogMapper blogMapper;
     private final RabbitMQMessageProducer messageProducer;
+    private final JwtUtil jwtUtil;
 
-    public BlogService(BlogRepository blogRepository, BlogMapper blogMapper, RabbitMQMessageProducer messageProducer) {
-        this.blogRepository = blogRepository;
-        this.blogMapper = blogMapper;
-        this.messageProducer = messageProducer;
-    }
 
     public List<BlogResponse> getAllBlog(){
         return blogRepository.findAll()
@@ -52,7 +54,18 @@ public class BlogService {
     }
 
     @Transactional
-    public BlogResponse createBlog(BlogRequest blogRequest) {
+    public BlogResponse createBlog(BlogRequest blogRequest,String token) {
+        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+
+        if (jwtUtil.isTokenExpired(jwtToken)) {
+            throw new AccessDeniedException("Token süresi dolmuş");
+        }
+
+        List<String> roles = jwtUtil.extractRoles(jwtToken);
+        if (!roles.contains("ADMIN")) {
+            throw new AccessDeniedException("Yetkin yok");
+        }
+
         Blog blog = blogMapper.toBlogEntity(blogRequest);
 
         if (blogRequest.getTitle() == null || blogRequest.getTitle().isEmpty()) {
@@ -69,7 +82,12 @@ public class BlogService {
 
 
     @Transactional
-    public BlogResponse updateBlog(Long blogId,BlogRequest blogRequest){
+    public BlogResponse updateBlog(Long blogId,BlogRequest blogRequest, String token ){
+        List<String> roles = jwtUtil.extractRoles(token);
+        if (!roles.contains("ADMIN")) {
+            throw new AccessDeniedException("Yetkin yok");
+        }
+
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new BlogNotFoundException("Güncellenecek blog bulunamadı"));
 
@@ -91,7 +109,13 @@ public class BlogService {
     }
 
     @Transactional
-    public void deleteBlog(Long blogId){
+    public void deleteBlog(Long blogId,String token ){
+
+        List<String> roles = jwtUtil.extractRoles(token);
+        if (!roles.contains("ADMIN")) {
+            throw new AccessDeniedException("Yetkin yok");
+        }
+
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new BlogNotFoundException("Silinecek blog bulunamadı"));
 

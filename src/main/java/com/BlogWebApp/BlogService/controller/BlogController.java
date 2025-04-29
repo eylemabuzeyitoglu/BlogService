@@ -19,19 +19,22 @@ public class BlogController {
     }
 
     @PostMapping
-    public void createBlog(@RequestBody BlogRequest blogRequest){
-        blogService.createBlog(blogRequest);
+    public void createBlog(@RequestBody BlogRequest blogRequest,
+                           @RequestHeader("Authorization") String token){
+        blogService.createBlog(blogRequest,token);
     }
 
     @PatchMapping("{id}")
     public void updateBlog(@PathVariable long id,
-                           @RequestBody BlogRequest blogRequest) {
-        blogService.updateBlog(id,blogRequest);
+                           @RequestBody BlogRequest blogRequest,
+                           @RequestHeader("Authorization") String token) {
+        blogService.updateBlog(id,blogRequest,token);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBlog(@PathVariable Long id){
-        blogService.deleteBlog(id);
+    public void deleteBlog(@PathVariable Long id,
+                           @RequestHeader("Authorization") String token){
+        blogService.deleteBlog(id,token);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
