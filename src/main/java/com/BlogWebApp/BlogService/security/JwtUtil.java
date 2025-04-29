@@ -1,50 +1,43 @@
 package com.BlogWebApp.BlogService.security;
 
-import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.security.Key;
 
 @Component
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-    private String SECRET_KEY;
+    private String secret;
 
-    public String generateToken(Long userId,String role){
-        return Jwts.builder()
-                .setSubject(userId.toString())
-                .claim("role", role)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
+    private Key getSignKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public boolean validateToken(String token){
+    public boolean isTokenValid(String token) {
         try {
-            getClaims(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token);
             return true;
-        }catch (Exception e){
+        } catch (JwtException e) {
             return false;
         }
     }
 
-    public Long getUserIdFromToken(String token){
-        return Long.parseLong(getClaims(token).getSubject());
-    }
-    public String getRoleFromToken(String token){
-        return getClaims(token).get("role", String.class);
-    }
-
-
-    private Claims getClaims(String token){
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+    public String extractUsername(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
                 .parseClaimsJws(token)
-                .getBody();
+                .getBody()
+                .getSubject();
     }
 }

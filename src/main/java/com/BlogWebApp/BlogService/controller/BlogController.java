@@ -1,7 +1,7 @@
 package com.BlogWebApp.BlogService.controller;
 
-import com.BlogWebApp.BlogService.mapper.BlogRequest;
-import com.BlogWebApp.BlogService.mapper.BlogResponse;
+import com.BlogWebApp.BlogService.dto.BlogRequest;
+import com.BlogWebApp.BlogService.dto.BlogResponse;
 import com.BlogWebApp.BlogService.service.BlogService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

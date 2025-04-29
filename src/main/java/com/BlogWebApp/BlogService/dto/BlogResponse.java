@@ -1,4 +1,4 @@
-package com.BlogWebApp.BlogService.mapper;
+package com.BlogWebApp.BlogService.dto;
 
 import lombok.*;
 
