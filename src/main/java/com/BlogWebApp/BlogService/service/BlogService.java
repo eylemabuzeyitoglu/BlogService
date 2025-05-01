@@ -1,7 +1,5 @@
 package com.BlogWebApp.BlogService.service;
 
-import com.BlogWebApp.BlogService.dto.BlogRequest;
-import com.BlogWebApp.BlogService.dto.BlogResponse;
 import com.BlogWebApp.BlogService.events.BlogCreatedEvent;
 import com.BlogWebApp.BlogService.events.BlogDeletedEvent;
 import com.BlogWebApp.BlogService.events.BlogLikedEvent;
@@ -10,12 +8,14 @@ import com.BlogWebApp.BlogService.exceptions.BlogNotFoundException;
 import com.BlogWebApp.BlogService.mapper.BlogMapper;
 import com.BlogWebApp.BlogService.model.Blog;
 import com.BlogWebApp.BlogService.repository.BlogRepository;
+import com.BlogWebApp.CommonSecurity.dto.BlogRequest;
+import com.BlogWebApp.CommonSecurity.dto.BlogResponse;
+import com.BlogWebApp.CommonSecurity.security.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.BlogWebApp.CommonSecurity.security.JwtUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +52,7 @@ public class BlogService {
     }
 
     @Transactional
-    public BlogResponse createBlog(BlogRequest blogRequest,String token) {
+    public BlogResponse createBlog(BlogRequest blogRequest, String token) {
         String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
 
         if (jwtUtil.isTokenExpired(jwtToken)) {
