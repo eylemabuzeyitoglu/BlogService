@@ -2,8 +2,8 @@ package com.BlogWebApp.BlogService.mapper;
 
 
 import com.BlogWebApp.BlogService.model.Blog;
-import com.BlogWebApp.CommonSecurity.dto.BlogRequest;
-import com.BlogWebApp.CommonSecurity.dto.BlogResponse;
+import com.BlogWebApp.Common.dto.BlogRequest;
+import com.BlogWebApp.Common.dto.BlogResponse;
 import org.springframework.stereotype.Component;
 
 @Component
