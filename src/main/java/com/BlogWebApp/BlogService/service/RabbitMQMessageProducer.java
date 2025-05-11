@@ -1,15 +1,19 @@
 package com.BlogWebApp.BlogService.service;
 
-
 import com.BlogWebApp.BlogService.events.BlogCreatedEvent;
 import com.BlogWebApp.BlogService.events.BlogDeletedEvent;
 import com.BlogWebApp.BlogService.events.BlogUpdatedEvent;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class RabbitMQMessageProducer {
+
     private final RabbitTemplate rabbitTemplate;
 
     @Value("${rabbitmq.exchange.name}")
@@ -24,22 +28,29 @@ public class RabbitMQMessageProducer {
     @Value("${rabbitmq.routing.key.blog.deleted}")
     private String routingKeyBlogDeleted;
 
-    public RabbitMQMessageProducer(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
+    public void sendBlogCreatedNotification(BlogCreatedEvent event) {
+        sendMessage(routingKeyBlogCreated, event, "Blog Oluşturuldu");
     }
 
-    public void sendBlogCreatedNotification(BlogCreatedEvent blogCreatedEvent) {
-        rabbitTemplate.convertAndSend(exchange, routingKeyBlogCreated, blogCreatedEvent);
-        System.out.println("Blog oluşturuldu:  " + blogCreatedEvent.getBlogId());
+    public void sendBlogUpdatedNotification(BlogUpdatedEvent event) {
+        sendMessage(routingKeyBlogUpdated, event, "Blog Güncellendi");
     }
 
-    public void sendBlogUpdatedNotification(BlogUpdatedEvent blogUpdatedEvent){
-        rabbitTemplate.convertAndSend(exchange,routingKeyBlogUpdated,blogUpdatedEvent);
-        System.out.println("Blog güncellendi: " + blogUpdatedEvent.getBlogId());
+    public void sendBlogDeletedNotification(BlogDeletedEvent event) {
+        sendMessage(routingKeyBlogDeleted, event, "Blog Silindi");
     }
 
-    public void sendBlogDeletedNotification(BlogDeletedEvent blogDeletedEvent){
-        rabbitTemplate.convertAndSend(exchange,routingKeyBlogDeleted,blogDeletedEvent);
-        System.out.println("Blog silindi: " + blogDeletedEvent.getBlogId());
+    private void sendMessage(String routingKey, Object event, String action) {
+        rabbitTemplate.convertAndSend(exchange, routingKey, event);
+        log.info("Blog {}: ID = {}", action, getEventId(event));
+    }
+
+    private Long getEventId(Object event) {
+        try {
+            return (Long) event.getClass().getMethod("getBlogId").invoke(event);
+        } catch (Exception e) {
+            log.error("Event ID alınırken hata oluştu", e);
+            return null;
+        }
     }
 }
