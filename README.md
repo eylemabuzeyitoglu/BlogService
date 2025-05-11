@@ -33,33 +33,6 @@ BlogService, kullanıcıların blog yazıları oluşturmasına, düzenlemesine v
 - RabbitMQ
 - Docker
 
-### Adımlar
-1. **Veritabanı Kurulumu**
-   ```sql
-   CREATE DATABASE blog_service;
-   ```
-
-2. **RabbitMQ Kurulumu**
-   - RabbitMQ sunucusunu başlatın
-   - Varsayılan port: 5672
-
-3. **Projeyi Klonlama**
-   ```bash
-   git clone [proje-url]
-   ```
-
-4. **Common Modülünü Derleme**
-   ```bash
-   cd Common
-   mvn clean install
-   ```
-
-5. **BlogService'i Başlatma**
-   ```bash
-   cd BlogService
-   mvn spring-boot:run
-   ```
-
 ## API Endpoint'leri
 
 ### BlogService API Endpoint'leri
