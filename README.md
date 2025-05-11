@@ -86,7 +86,7 @@ CREATE TABLE blog_liked_user_ids (
 - Hata mesajları
 
 ## Deployment
-- Docker container'ları
+- Docker container
 
 
 
