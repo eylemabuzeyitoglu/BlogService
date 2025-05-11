@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients(basePackages = "com.BlogWebApp.CommonSecurity.client")
+@EnableFeignClients(basePackages = "com.BlogWebApp.Common.client")
 public class BlogServiceApplication {
 
 	public static void main(String[] args) {
