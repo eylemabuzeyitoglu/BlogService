@@ -88,8 +88,11 @@ CREATE TABLE blog_liked_user_ids (
 ## Deployment
 - Docker container
 
+## Test
+Projede iki tür test kullanılmaktadır:
 
-
+- Unit Testler
+- Integration Testler
 
 
 
