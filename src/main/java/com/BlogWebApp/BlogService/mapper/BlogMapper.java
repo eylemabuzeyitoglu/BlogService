@@ -2,8 +2,8 @@ package com.BlogWebApp.BlogService.mapper;
 
 
 import com.BlogWebApp.BlogService.model.Blog;
-import com.BlogWebApp.Common.dto.BlogRequest;
-import com.BlogWebApp.Common.dto.BlogResponse;
+import com.BlogWebApp.Common.dto.request.BlogRequest;
+import com.BlogWebApp.Common.dto.response.BlogResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,4 +29,5 @@ public class BlogMapper {
 
         return blog;
     }
+
 }
